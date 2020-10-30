@@ -20,7 +20,7 @@
 # showfigfonts (for linux)
 ############################################################################################
 
-### Set and check the working directory
+### Set and check the working directory AUTOMATICALLY
 ### Auto setwd
 install.packages("rstudioapi")
 library(rstudioapi); current_path <- getActiveDocumentContext()$path; setwd(dirname(current_path)) ### https://eranraviv.com/r-tips-and-tricks-working-directory/
@@ -32,16 +32,17 @@ library(tseries)
 library(forecast)
 
 ### load the data
-rainfall <- read.csv("teste.csv")
+rainfall <- read.csv("test.csv")
 
 ### quick check on the data
 str(rainfall)
 table(is.na(rainfall))
 dim(rainfall)
-rainfall[1:8, 1:6]
+rainfall[1:8, 1:4]
 
 ### selecting the columns; in this case, drop the first column as well
-rainfall <- (rainfall[, 2:6])
+rainfall <- (rainfall[, 2:4])
+rainfall[1:8, 1:ncol(rainfall)]
 
 ### create empty lists to store the results
 output_list <- list()
@@ -51,7 +52,7 @@ output_mt <- list()
 
 
 ### The loop
-for(j in c(1:5)){ ### the wanted columns
+for(j in c(1:3)){ ### the wanted columns, in this case, from 1 to 3
 
   ### Convert to ln format
   chuva=(rainfall[, j])
@@ -152,33 +153,31 @@ getwd()
 # setwd(C:\My_dir)
 
 ### load the data
-rainfall <- read.csv("teste.csv")
+rainfall <- read.csv("test.csv")
 
-# lnchuva=log(rainfall[1:192])
-lnchuva=log(rainfall[, 2:2])
+lnchuva=log(rainfall[, 2:2]) ### only one variable selected
 lnchuva
 
-### testes, desligados
-#ACF, PACF and Dickey-Fuller Test
-# acf(lnchuva, lag.max=20)
-# pacf(lnchuva, lag.max=20)
-# difflnchuva=diff(lnchuva, 1)
-# difflnchuva
-# adf.test(lnchuva)
-# adf.test(difflnchuva)
+### tests
+### ACF, PACF and Dickey-Fuller Test
+acf(lnchuva, lag.max=20)
+pacf(lnchuva, lag.max=20)
+difflnchuva=diff(lnchuva, 1)
+difflnchuva
+adf.test(lnchuva)
+adf.test(difflnchuva)
 
-#Time series and auto.arima
-
-chuvaarima<-ts(lnchuva, start = c(2001,1), end=c(2019,12), frequency = 12)
-fitlnchuva<-auto.arima(chuvaarima)
+### Time series and auto.arima
+chuvaarima <- ts(lnchuva, start = c(2001,1), end=c(2019,12), frequency = 12)
+fitlnchuva <- auto.arima(chuvaarima)
 fitlnchuva
 
 ### plot
-# plot(chuvaarima, type ='l')
-# title('JNJ Chuva')
-# exp(lnchuva)
+plot(chuvaarima, type ='l')
+title('JNJ Chuva')
+exp(lnchuva)
 
-#Forecasted Values From ARIMA
+### Forecasted Values From ARIMA
 forecastedvalues_ln=forecast(fitlnchuva, h=168)
 forecastedvalues_ln
 plot(forecastedvalues_ln)
@@ -188,3 +187,13 @@ finalforecastvalues=exp(forecastedvaluesextracted)
 finalforecastvalues
 
 write.csv(finalforecastvalues, "CanaARIMA.csv")
+
+
+############################## Data ##############################
+### how this data was generated:
+# set.seed(10)
+# (v1 <- abs(arima.sim(n = 228, list(ar = c(0.897, -0.488), ma = c(-0.279, 0.288)), sd = sqrt(0.1196))))
+# (v2 <- abs(arima.sim(n = 228, list(ar = c(0.887, -0.485), ma = c(-0.229, 0.488)), sd = sqrt(0.1296))))
+# (v3 <- abs(arima.sim(n = 228, list(ar = c(0.889, -0.488), ma = c(-0.227, 0.288)), sd = sqrt(0.1396))))
+# (v4 <- abs(arima.sim(n = 228, list(ar = c(0.887, -0.458), ma = c(-0.279, 0.248)), sd = sqrt(0.1496))))
+# (v5 <- abs(arima.sim(n = 228, list(ar = c(0.897, -0.858), ma = c(-0.229, 0.248)), sd = sqrt(0.1596))))
