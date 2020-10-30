@@ -32,7 +32,7 @@ library(tseries)
 library(forecast)
 
 ### load the data
-rainfall <- read.csv("test_data.csv")
+rainfall <- read.csv("data_t.csv")
 
 ### quick check on the data
 str(rainfall)
@@ -153,7 +153,7 @@ getwd()
 # setwd(C:\My_dir)
 
 ### load the data
-rainfall <- read.csv("test_data.csv")
+rainfall <- read.csv("data_t.csv")
 
 lnchuva=log(rainfall[, 2:2]) ### only one variable selected
 lnchuva
